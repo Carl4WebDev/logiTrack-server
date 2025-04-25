@@ -4,7 +4,7 @@ const multer = require("multer");
 const { Pool } = require("pg");
 const XLSX = require("xlsx");
 
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 
 const app = express();
 const cors = require("cors"); // Install with: npm install cors
