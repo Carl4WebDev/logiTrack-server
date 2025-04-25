@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const multer = require("multer");
 const { Pool } = require("pg");
@@ -13,13 +14,17 @@ app.use(express.json({ limit: "50mb" })); // For handling file data
 
 const upload = multer({ storage: multer.memoryStorage() });
 
-// Database configuration
 const pool = new Pool({
-  user: "postgres",
-  password: "root",
-  host: "localhost",
-  port: 5432,
-  database: "logistics_system",
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT,
+  database: process.env.DB_NAME,
+  // For production (Render) you might need SSL:
+  ssl:
+    process.env.NODE_ENV === "production"
+      ? { rejectUnauthorized: false }
+      : false,
 });
 
 // Middleware
@@ -85,6 +90,7 @@ app.delete("/api/users/secrets/:id", async (req, res) => {
     res.status(500).json({ error: "Database error" });
   }
 });
+// --------------------------------------------------------------------------------------------------
 
 // Login endpoint
 app.post("/api/auth/login", async (req, res) => {
@@ -134,6 +140,7 @@ app.post("/api/auth/login", async (req, res) => {
     });
   }
 });
+// --------------------------------------------------------------------------------------------------
 // Register endpoint
 app.post("/api/auth/register", async (req, res) => {
   const { email, password, role, fullName } = req.body;
@@ -163,7 +170,8 @@ app.listen(4000, () => {
   console.log("Server running on port 4000");
 });
 
-// DriversPage---------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------
+// Drivers endpoint
 // get data from drivers
 app.get("/api/drivers", async (req, res) => {
   try {
@@ -254,8 +262,8 @@ app.get("/api/vehicles-drivers", async (req, res) => {
   }
 });
 
-// Vehicle Page Backend Endpoints -------------------------------------------------
-
+// --------------------------------------------------------------------------------------------------
+// Vehicles endpoint
 // GET all vehicles (including status)
 app.get("/api/vehicles", async (req, res) => {
   try {
@@ -437,10 +445,8 @@ app.delete("/api/routes/:id", async (req, res) => {
   }
 });
 
-// ============================================================
-
-// Add these endpoints to your existing server.js
-// GET endpoint for shipments
+// --------------------------------------------------------------------------------------------------
+// Shipments endpoint
 app.get("/api/shipments", async (req, res) => {
   try {
     const result = await pool.query(`
@@ -613,7 +619,8 @@ app.put(
     }
   }
 );
-// ---------------------
+// --------------------------------------------------------------------------------------------------
+
 // Dispatch Ouput endpoints
 // GET endpoint for dispatch outputs
 app.get("/api/dispatch-outputs", async (req, res) => {
@@ -797,7 +804,8 @@ app.put(
     }
   }
 );
-// _______________________________________________________________________________
+// --------------------------------------------------------------------------------------------------
+
 // Delivery Forward status endpoint
 // GET endpoint for delivery forwards
 app.get("/api/delivery-forwards", async (req, res) => {
@@ -981,7 +989,8 @@ app.put(
     }
   }
 );
-// -----------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------
+
 // Customer API Endpoints
 // Get all customers
 app.get("/api/customers", async (req, res) => {
@@ -1158,8 +1167,8 @@ app.put(
   }
 );
 
-// _____________________________________++++++++++++++++++++++
-
+// --------------------------------------------------------------------------------------------------
+// Summary endpoint
 // Get all summary
 app.get("/api/summary", async (req, res) => {
   try {
@@ -1331,7 +1340,8 @@ app.put(
     }
   }
 );
-// -----------------------------------------------
+
+// --------------------------------------------------------------------------------------------------
 // Item snapshots endpoint
 // GET endpoint for item snapshots
 app.get("/api/item-snapshots", async (req, res) => {

@@ -1,0 +1,20 @@
+databases:
+  - name: logistics_db
+    databaseName: logistics_system
+    user: logistics_user
+    plan: free
+
+services:
+  - type: web
+    name: logistics-backend
+    runtime: node
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: logistics_db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+    plan: free
