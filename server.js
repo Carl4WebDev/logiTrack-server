@@ -8,7 +8,14 @@ const bcrypt = require("bcryptjs");
 
 const app = express();
 const cors = require("cors"); // Install with: npm install cors
-app.use(cors()); // Add this before your routes
+app.use(
+  cors({
+    origin: "https://logistics-system.netlify.app",
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+  })
+); // Add this before your routes
 
 app.use(express.json({ limit: "50mb" })); // For handling file data
 
